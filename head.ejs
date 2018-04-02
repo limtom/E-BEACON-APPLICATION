@@ -1,0 +1,155 @@
+<!-- meta -->
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<!-- <meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width"> -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#000000">
+<meta name="description" content="">
+<meta name="author" content="">
+<link rel="icon" type="image/x-icon" href="assets/img/UNEC.png">
+<!-- title -->
+<title>E-BEACON</title>
+<!-- CSS -->
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/semantic.css">
+ <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.1/dist/leaflet.css"
+   integrity="sha512-Rksm5RenBEKSKFjgI3a41vrjkw4EVPlJ3+OiI65vTjIdo9brlAacEuKOiQ5OFh7cOI1bkDwLqdLw3Zg0cRJAAQ=="
+   crossorigin=""/>
+<link rel="stylesheet" href="lib/Leaflet/src/L.Control.Locate.min.css">
+<link rel="stylesheet" href="lib/Leaflet/src/leaflet-sidebar.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.css" />
+<!-- JAVASCRIPT -->
+<script type="text/javascript" src="assets/js/jquery.js"></script>
+<script type="text/javascript" src="assets/js/semantic.js"></script>
+<!-- style -->
+<style>
+    html, body,{
+      height: 100%;
+      width: 100%;
+      overflow: hidden;
+    }
+    h5{
+      margin-top: 5px;
+      margin-bottom: 5px;
+    }
+    h4{
+      margin-bottom: 0px;
+    }
+    #map {
+      width: 100%;
+      height: 100vh;
+    }
+    .ui.inverted.menu{
+      border-radius: 0px;
+      margin-bottom: 0px;
+    }
+    .ui.button{
+      border-radius: 0px;
+    }
+    .ui.card{
+      display: block;
+      width: inherit;
+    }
+    .ui.form.input{
+      border-radius: 0px;
+      border: 2px solid green;
+    }
+    .leaflet-control-search .search-button {
+    float: left;
+    width: 30px;
+    height: 30px;
+    border-radius: 2px;
+    line-height: 30px;
+    display: inherit;
+    }
+    .leaflet-popup-content {
+      margin: 5px;
+    }
+    .leaflet-popup-content-wrapper {
+      padding: 1px;
+      text-align: center;
+      border-radius: 0px;
+      width: 200px;
+      color: green;
+    }
+    .leaflet-bar a{
+      color: white;
+      background-color: green;
+    }
+    .leaflet-control-layers-toggle {
+      background-color: green;
+    }
+    .leaflet-control{
+      border-color: green;
+    }
+    .leaflet-control-layers-separator {
+      border-top: 1px solid green;
+    }
+    .leaflet-touch .leaflet-bar a:first-child {
+      border-radius: 0px;
+      border: 1px solid white;
+    }
+    .leaflet-touch .leaflet-bar a:last-child {
+      border-radius: 0px;
+      border: 1px solid white;
+    }
+    .leaflet-touch .leaflet-control-layers, .leaflet-touch .leaflet-bar {
+      border: 1px solid white;
+    }
+    .leaflet-touch .leaflet-control-layers-toggle {
+      border: 1px solid white;
+    }
+    .leaflet-control-layers {
+      overflow: auto;
+      border-radius: 0px;
+      border: 1px solid white;
+      color: green;
+    }
+    .leaflet-control-layers label {
+      font-weight: normal;
+      margin-bottom: 0px;
+    }
+    .leaflet-routing-alt, .leaflet-routing-geocoders, .leaflet-routing-error {
+      background-color: green;
+      color: white;
+    }
+    .leaflet-control-container .leaflet-routing-container-hide {
+      width: 32px;
+      height: 32px;
+    }
+    .leaflet-routing-container{
+      background-color: green;
+    }
+    .sidebar-header{
+      background-color: green;
+      text-align: center;
+    }
+    .fa-caret-left:before {
+      color: white;
+    }
+    .sidebar-tabs{
+      background-color: green;
+      border-color: 1px solid white;
+    }
+    .sidebar-tabs > ul > li > a {
+    color: white;
+    }
+    .ui.card > .content p {
+      display: block;
+    }
+    .field {
+      border-color: 1px solid green;
+    }
+    /*media*/
+    @media only screen and (max-width:640px) {
+      .ui{
+        display: block;
+        float: none;
+        width: auto;
+      }
+    }
+
+
+</style>

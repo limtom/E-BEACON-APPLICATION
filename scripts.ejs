@@ -1,0 +1,159 @@
+<script type="text/javascript" src="assets/js/jquery.js"></script>
+<script src="https://unpkg.com/leaflet@1.3.1/dist/leaflet.js"
+   integrity="sha512-/Nsx9X4HebavoBvEBuyp3I7od5tA0UzAxs+j83KgC8PU0kgB4XiK4Lfe4y4cgBtaRJQEIFCW+oC506aPT2L1zw=="
+   crossorigin=""></script>
+<script type="text/javascript" src="lib/Leaflet/src/L.Control.Locate.js"></script>
+<script type="text/javascript" src="lib/Leaflet/src/leaflet-sidebar.js"></script>
+<script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
+<script>
+//create the map object
+  var map = L.map("map",{zoomControl:false})
+
+//track the user
+  map.locate({
+    setView: true,
+    maxZoom: 16,
+    watch: true,
+    enableHighAccuracy: true
+  });
+
+  //If location found
+  var buffVal = parseInt($("#buffer").val());
+  map.on("locationfound", function(e){
+    var circle = new L.circle(e.latlng, buffVal).addTo(map);
+    map.fitBounds(circle.getBounds());
+    circle.bringToBack()
+  })
+  // On location error
+  map.on("locationerror", function(e){
+    // map.setView([map.getCenter()],16)
+    alert(e.message);
+  })
+  map.addControl(L.control.zoom({position:"bottomright"}))
+
+//basemap layer
+  var basemapTileLayer = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+  	maxZoom: 25,
+  	attribution: "&copy; <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a>"
+  }).addTo(map);
+
+//image layer
+  var esri_WorldImagery = L.tileLayer("http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", {
+    maxZoom: 25,
+	  attribution: "Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community"
+  });
+
+//load control point from database
+var controlPoint = [<%-controlMarkers%>];
+var controlGeoJson = new L.geoJson(controlPoint,{
+  pointToLayer: function(feature, latlng){
+    var circleMarker = new L.circleMarker(latlng,{
+      color: "green",
+      radius: 5,
+    });
+    return circleMarker;
+  },
+  onEachFeature: function(feature, layer){
+    // console.log(feature.properties.eastings,feature.properties.northings);
+    var eastingsValue = feature.properties.eastings;
+    var northingsValue = feature.properties.northings;
+    var heightsValue = feature.properties.heights;
+    var details = "<h4>"+feature.properties.name;
+    details+="</h4><p><em><h5>EASTINGS: "+eastingsValue;
+    details+=" NORTHINGS: "+northingsValue;
+    details+=" HEIGHTS: "+heightsValue+"</h5></p></em>"
+    details+="<div class='ui tiny green button' onclick='locateControl()' id='locatebutton'>LOCATE</div>"
+    layer.bindPopup(details)
+  }
+}).addTo(map);
+// On location error
+map.on("locationerror", function(e){
+  map.fitBounds(controlGeoJson.getBounds())
+  // map.setView([map.getCenter()],16)
+  alert(e.message);
+})
+
+var pointToLocate = [];
+controlGeoJson.on("click", function(e){
+  pointToLocate.push([e.latlng.lat, e.latlng.lng]);
+  if(pointToLocate.length > 2){
+    pointToLocate.shift();
+  }
+})
+
+var locationPoint = [];
+map.on("locationfound", function(e){
+  locationPoint.push([e.latitude,e.longitude]);
+  if(locationPoint > 1){
+    locationPoint.shift();
+  }
+})
+
+//layer controls
+  var basemapLayer = {
+    "TileLayer":basemapTileLayer,
+    "ImageryBasemap":esri_WorldImagery,
+  };
+  var vectorLayers = {
+  "Control Point":controlGeoJson,
+  };
+  var layerControl = new L.control.layers(basemapLayer,vectorLayers).addTo(map);
+  // map.fitBounds(controlGeoJson.getBounds());
+
+  //locate control
+  var locationControl = L.control.locate({
+    position:"bottomright",
+    strings: {
+        title: "Show my location"
+    },
+    locateOptions:{
+      enableHighAccuracy:true
+    }
+  }).addTo(map);
+
+  //sidebar
+  var sidebar = L.control.sidebar('sidebar').addTo(map);
+
+  //search
+  // var controlSearch = new L.Control.Search({
+	// 	position:'topright',
+	// 	layer: controlGeoJson,
+	// 	initial: false,
+	// 	zoom: 12,
+	// 	marker: false
+	// });
+  //
+	// map.addControl(controlSearch);
+
+  //route
+  var getRoute = L.Routing.control({
+    waypoints: [
+      null,
+      null
+    ],
+    Show: false,
+    collapsible: true,
+    routeWhileDragging: true,
+    router:L.Routing.mapbox("pk.eyJ1IjoiaG9ybGFydG9ybWV3YWgiLCJhIjoiY2phNTJieXN5MzMxdzJxcXJlNHNrYWNiZCJ9.LSvh7Ux2JLCBURk747ovAA")
+  })
+  .on("routingerror", function(e) {
+        try {
+            map.getCenter();
+        } catch (e) {
+            map.fitBounds(L.latLngBounds(getRoute.getWaypoints().map(function(wp) { return wp.latLng; })));
+        }
+
+        handleError(e);
+    }).addTo(map);
+
+    //fire the route
+  function locateControl(){
+    getRoute.spliceWaypoints(0, 1, L.latLng(locationPoint[0]));
+    getRoute.spliceWaypoints(getRoute.getWaypoints().length - 1, 1, L.latLng(pointToLocate[0]));
+  };
+  //toggle the itinanery
+  // $(".leaflet-routing-container").click(function(){
+  //   $(".leaflet-routing-alt").toggle();
+  // });
+
+</script>
